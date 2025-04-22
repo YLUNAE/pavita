@@ -1,97 +1,113 @@
 import streamlit as st
 
-# Constante de los gases ideales
-R = 0.0821  # atm·L/mol·K
+st.set_page_config(page_title="Leyes de los Gases", page_icon="🧪")
 
-st.title("Calculadora de Gases Ideales y Ley de Boyle-Mariotte")
-st.write("Selecciona la ley que deseas usar para hacer el cálculo:")
+st.title("🧪 Calculadora de Leyes de Gases")
+st.write("Selecciona una ley para realizar el cálculo de variables según las condiciones del gas.")
 
-# Botones para seleccionar la ley
-ley = st.radio("Selecciona una ley", ["Ecuación de Gases Ideales", "Ley de Boyle y Mariotte"])
-
-# Función para formatear los resultados
+# Función para mostrar el resultado
 def mostrar_resultado(valor, unidad):
-    st.success(f"**Resultado: {round(valor, 4)} {unidad}**")
+    st.success(f"🔍 **Resultado:** {round(valor, 4)} {unidad}")
 
-# Ecuación de Gases Ideales
-if ley == "Ecuación de Gases Ideales":
-    st.write("Usamos la fórmula: **PV = nRT**")
-    opcion = st.selectbox("Variable a calcular", ["Presión (P)", "Volumen (V)", "Temperatura (T)", "Número de moles (n)"])
+# Ley seleccionada
+ley = st.radio("📚 Elige una ley", [
+    "Ley de Boyle y Mariotte",
+    "Ley de Charles",
+    "Ley de Gay-Lussac"
+])
 
-    if opcion == "Presión (P)":
-        volumen = st.number_input("Volumen (L)", min_value=0.0, format="%.4f")
-        temperatura = st.number_input("Temperatura (K)", min_value=0.0, format="%.4f")
-        moles = st.number_input("Número de moles (mol)", min_value=0.0, format="%.4f")
+# ========== LEY DE BOYLE ==========
+if ley == "Ley de Boyle y Mariotte":
+    st.subheader("🧮 P₁ × V₁ = P₂ × V₂  (Temperatura constante)")
+    st.info("La presión y el volumen de un gas son inversamente proporcionales si la temperatura es constante.")
 
-        if st.button("Calcular Presión"):
-            if volumen > 0:
-                presion = (moles * R * temperatura) / volumen
-                mostrar_resultado(presion, "atm")
+    opcion = st.selectbox("¿Qué deseas calcular?", ["Volumen final (V₂)", "Presión final (P₂)"])
+
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        P1 = st.number_input("Presión inicial (P₁) [atm]", min_value=0.0)
+    with col2:
+        V1 = st.number_input("Volumen inicial (V₁) [L]", min_value=0.0)
+    with col3:
+        if opcion == "Volumen final (V₂)":
+            P2 = st.number_input("Presión final (P₂) [atm]", min_value=0.0)
+        else:
+            V2 = st.number_input("Volumen final (V₂) [L]", min_value=0.0)
+
+    if st.button("Calcular"):
+        if opcion == "Volumen final (V₂)":
+            if P2 > 0:
+                V2 = (P1 * V1) / P2
+                mostrar_resultado(V2, "L")
             else:
-                st.error("El volumen debe ser mayor que 0.")
-
-    elif opcion == "Volumen (V)":
-        presion = st.number_input("Presión (atm)", min_value=0.0, format="%.4f")
-        temperatura = st.number_input("Temperatura (K)", min_value=0.0, format="%.4f")
-        moles = st.number_input("Número de moles (mol)", min_value=0.0, format="%.4f")
-
-        if st.button("Calcular Volumen"):
-            if presion > 0:
-                volumen = (moles * R * temperatura) / presion
-                mostrar_resultado(volumen, "L")
+                st.error("❌ La presión final debe ser mayor que 0.")
+        else:
+            if V2 > 0:
+                P2 = (P1 * V1) / V2
+                mostrar_resultado(P2, "atm")
             else:
-                st.error("La presión debe ser mayor que 0.")
+                st.error("❌ El volumen final debe ser mayor que 0.")
 
-    elif opcion == "Temperatura (T)":
-        presion = st.number_input("Presión (atm)", min_value=0.0, format="%.4f")
-        volumen = st.number_input("Volumen (L)", min_value=0.0, format="%.4f")
-        moles = st.number_input("Número de moles (mol)", min_value=0.0, format="%.4f")
+# ========== LEY DE CHARLES ==========
+elif ley == "Ley de Charles":
+    st.subheader("📏 V₁ / T₁ = V₂ / T₂  (Presión constante)")
+    st.info("El volumen de un gas es directamente proporcional a su temperatura absoluta si la presión es constante.")
 
-        if st.button("Calcular Temperatura"):
-            if moles > 0:
-                temperatura = (presion * volumen) / (moles * R)
-                mostrar_resultado(temperatura, "K")
+    opcion = st.selectbox("¿Qué deseas calcular?", ["Volumen final (V₂)", "Temperatura final (T₂)"])
+
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        V1 = st.number_input("Volumen inicial (V₁) [L]", min_value=0.0)
+    with col2:
+        T1 = st.number_input("Temperatura inicial (T₁) [K]", min_value=0.0)
+    with col3:
+        if opcion == "Volumen final (V₂)":
+            T2 = st.number_input("Temperatura final (T₂) [K]", min_value=0.0)
+        else:
+            V2 = st.number_input("Volumen final (V₂) [L]", min_value=0.0)
+
+    if st.button("Calcular"):
+        if opcion == "Volumen final (V₂)":
+            if T1 > 0:
+                V2 = (V1 * T2) / T1
+                mostrar_resultado(V2, "L")
             else:
-                st.error("Los moles deben ser mayores que 0.")
-
-    elif opcion == "Número de moles (n)":
-        presion = st.number_input("Presión (atm)", min_value=0.0, format="%.4f")
-        volumen = st.number_input("Volumen (L)", min_value=0.0, format="%.4f")
-        temperatura = st.number_input("Temperatura (K)", min_value=0.0, format="%.4f")
-
-        if st.button("Calcular moles"):
-            if temperatura > 0:
-                moles = (presion * volumen) / (R * temperatura)
-                mostrar_resultado(moles, "mol")
+                st.error("❌ La temperatura inicial debe ser mayor que 0.")
+        else:
+            if V1 > 0:
+                T2 = (V2 * T1) / V1
+                mostrar_resultado(T2, "K")
             else:
-                st.error("La temperatura debe ser mayor que 0.")
+                st.error("❌ El volumen inicial debe ser mayor que 0.")
 
-# Ley de Boyle y Mariotte
-elif ley == "Ley de Boyle y Mariotte":
-    st.write("Usamos la fórmula: **P1 * V1 = P2 * V2**")
-    
-    opcion_boyle = st.selectbox("¿Qué deseas calcular?", ["Volumen final (V2)", "Presión final (P2)"])
+# ========== LEY DE GAY-LUSSAC ==========
+elif ley == "Ley de Gay-Lussac":
+    st.subheader("🌡️ P₁ / T₁ = P₂ / T₂  (Volumen constante)")
+    st.info("La presión de un gas es directamente proporcional a su temperatura absoluta si el volumen es constante.")
 
-    if opcion_boyle == "Volumen final (V2)":
-        P1 = st.number_input("Presión inicial (P1) [atm]", min_value=0.0, format="%.4f")
-        V1 = st.number_input("Volumen inicial (V1) [L]", min_value=0.0, format="%.4f")
-        P2 = st.number_input("Presión final (P2) [atm]", min_value=0.0, format="%.4f")
-        
-        if st.button("Calcular Volumen Final (V2)"):
-            if P1 > 0 and P2 > 0:
-                V2_calculado = (P1 * V1) / P2
-                mostrar_resultado(V2_calculado, "L")
+    opcion = st.selectbox("¿Qué deseas calcular?", ["Presión final (P₂)", "Temperatura final (T₂)"])
+
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        P1 = st.number_input("Presión inicial (P₁) [atm]", min_value=0.0)
+    with col2:
+        T1 = st.number_input("Temperatura inicial (T₁) [K]", min_value=0.0)
+    with col3:
+        if opcion == "Presión final (P₂)":
+            T2 = st.number_input("Temperatura final (T₂) [K]", min_value=0.0)
+        else:
+            P2 = st.number_input("Presión final (P₂) [atm]", min_value=0.0)
+
+    if st.button("Calcular"):
+        if opcion == "Presión final (P₂)":
+            if T1 > 0:
+                P2 = (P1 * T2) / T1
+                mostrar_resultado(P2, "atm")
             else:
-                st.error("Las presiones deben ser mayores que 0.")
-
-    elif opcion_boyle == "Presión final (P2)":
-        P1 = st.number_input("Presión inicial (P1) [atm]", min_value=0.0, format="%.4f")
-        V1 = st.number_input("Volumen inicial (V1) [L]", min_value=0.0, format="%.4f")
-        V2 = st.number_input("Volumen final (V2) [L]", min_value=0.0, format="%.4f")
-        
-        if st.button("Calcular Presión Final (P2)"):
-            if V1 > 0 and V2 > 0:
-                P2_calculado = (P1 * V1) / V2
-                mostrar_resultado(P2_calculado, "atm")
+                st.error("❌ La temperatura inicial debe ser mayor que 0.")
+        else:
+            if P1 > 0:
+                T2 = (P2 * T1) / P1
+                mostrar_resultado(T2, "K")
             else:
-                st.error("Los volúmenes deben ser mayores que 0.")
+                st.error("❌ La presión inicial debe ser mayor que 0.")
